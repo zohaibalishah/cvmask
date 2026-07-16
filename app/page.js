@@ -551,8 +551,8 @@ export default function Home() {
               </div>
 
               <div className="dropzone-text">
-                <h3>Drag and drop your CV file here</h3>
-                <p>Supports PDF, DOCX, PNG, JPG, or WEBP up to 15 MB</p>
+                <h3>{t.dropTitle}</h3>
+                <p>{t.dropDesc}</p>
               </div>
 
               <button
@@ -563,7 +563,7 @@ export default function Home() {
                   triggerFileInput();
                 }}
               >
-                Select CV File
+                {t.selectFileBtn}
               </button>
             </div>
           </div>
@@ -573,10 +573,8 @@ export default function Home() {
         {uploading && (
           <div className="uploading-container">
             <div className="spinner"></div>
-            <div className="uploading-title">Analyzing & Redacting CV</div>
-            <div className="uploading-subtitle">
-              Running PII detection models and generating redacted PDF preview...
-            </div>
+            <div className="uploading-title">{t.uploadingTitle}</div>
+            <div className="uploading-subtitle">{t.uploadingSubtitle}</div>
             <div className="progress-bar-bg">
               <div
                 className={`progress-bar-fill ${progress === 90 ? "animated" : ""}`}
@@ -598,9 +596,9 @@ export default function Home() {
                   <FileText size={26} />
                 </div>
                 <div className="file-details">
-                  <h2>{file?.name || "Uploaded CV"}</h2>
+                  <h2>{file?.name || t.uploadedCV}</h2>
                   <span>
-                    Size: {file ? formatBytes(file.size) : "Unknown"} | Format: {cvData.kind?.toUpperCase()}
+                    {t.fileSize}: {file ? formatBytes(file.size) : t.unknown} | {t.fileFormat}: {cvData.kind?.toUpperCase()}
                   </span>
                 </div>
               </div>
@@ -608,13 +606,13 @@ export default function Home() {
               {/* Candidate Summary Card */}
               {cvData.summary && (
                 <div className="candidate-summary-card">
-                  <h3 className="summary-card-title">Candidate Profile Highlights</h3>
+                  <h3 className="summary-card-title">{t.summaryTitle}</h3>
 
                   <div className="summary-details">
                     <div className="summary-row">
                       <Briefcase size={18} className="summary-icon" />
                       <div className="summary-item">
-                        <label>Latest Title</label>
+                        <label>{t.latestTitle}</label>
                         <span>{cvData.summary.latestTitle}</span>
                       </div>
                     </div>
@@ -622,15 +620,15 @@ export default function Home() {
                     <div className="summary-row">
                       <Calendar size={18} className="summary-icon" />
                       <div className="summary-item">
-                        <label>Est. Experience</label>
-                        <span>{cvData.summary.yearsOfExperience > 0 ? `${cvData.summary.yearsOfExperience} Years` : "Not explicitly found"}</span>
+                        <label>{t.estExperience}</label>
+                        <span>{cvData.summary.yearsOfExperience > 0 ? `${cvData.summary.yearsOfExperience} ${t.yearsExp}` : t.notFound}</span>
                       </div>
                     </div>
                   </div>
 
                   {cvData.summary.skills && cvData.summary.skills.length > 0 && (
                     <div className="summary-skills-section">
-                      <label className="skills-section-label">Matched Skills</label>
+                      <label className="skills-section-label">{t.matchedSkills}</label>
                       <div className="summary-skills-grid">
                         {cvData.summary.skills.map((skill, idx) => (
                           <span key={idx} className="skill-pill">
@@ -648,9 +646,9 @@ export default function Home() {
                 <div className="stat-item">
                   <Zap className="stat-icon" size={20} />
                   <div className="stat-content">
-                    <label>Redaction Status</label>
+                    <label>{t.redactionStatus}</label>
                     <span style={{ color: cvData.paid ? "var(--color-success)" : "var(--color-warning)" }}>
-                      {cvData.paid ? "Unlocked" : "Masked"}
+                      {cvData.paid ? t.statusUnlocked : t.statusMasked}
                     </span>
                   </div>
                 </div>
@@ -658,8 +656,8 @@ export default function Home() {
                 <div className="stat-item">
                   <FileCheck className="stat-icon" size={20} />
                   <div className="stat-content">
-                    <label>OCR Method</label>
-                    <span>{cvData.ocrUsed ? "OCR Scanned" : "Text Layer"}</span>
+                    <label>{t.ocrMethod}</label>
+                    <span>{cvData.ocrUsed ? t.ocrScanned : t.textLayer}</span>
                   </div>
                 </div>
 
@@ -667,7 +665,7 @@ export default function Home() {
                   <div className="stat-item">
                     <Layers className="stat-icon" size={20} />
                     <div className="stat-content">
-                      <label>Scanned Pages</label>
+                      <label>{t.scannedPages}</label>
                       <span>{cvData.scannedPages}</span>
                     </div>
                   </div>
@@ -677,8 +675,8 @@ export default function Home() {
                   <div className="stat-item">
                     <ShieldAlert className="stat-icon" style={{ color: "var(--color-danger)" }} size={20} />
                     <div className="stat-content">
-                      <label>ID Cards Hidden</label>
-                      <span>{cvData.idImagesHidden} cards</span>
+                      <label>{t.idCardsHidden}</label>
+                      <span>{cvData.idImagesHidden} {t.cards}</span>
                     </div>
                   </div>
                 )}
@@ -687,7 +685,7 @@ export default function Home() {
               {/* Detected PII List */}
               <div>
                 <h3 className="pii-section-title">
-                  Summary ({getPiiCount()} items masked)
+                  {t.summaryMasked} ({getPiiCount()} {t.itemsMasked})
                 </h3>
 
                 <div className="pii-list">
@@ -696,20 +694,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Mail size={18} className="pii-label-icon" />
-                      Email Addresses
+                      {t.emails}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.emails?.length > 0 ? (
                         cvData.detected.emails.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -718,20 +711,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Phone size={18} className="pii-label-icon" />
-                      Phone Numbers
+                      {t.phones}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.phones?.length > 0 ? (
                         cvData.detected.phones.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -740,20 +728,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Linkedin size={18} className="pii-label-icon" />
-                      LinkedIn Profiles
+                      {t.linkedin}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.linkedin?.length > 0 ? (
                         cvData.detected.linkedin.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -762,20 +745,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Github size={18} className="pii-label-icon" />
-                      GitHub Profiles
+                      {t.github}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.github?.length > 0 ? (
                         cvData.detected.github.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -784,20 +762,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Globe size={18} className="pii-label-icon" />
-                      Websites & Links
+                      {t.websites}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.websites?.length > 0 ? (
                         cvData.detected.websites.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -806,20 +779,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <CnicIcon size={18} className="pii-label-icon" />
-                      National ID / CNIC
+                      {t.cnic}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.cnic?.length > 0 ? (
                         cvData.detected.cnic.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -828,20 +796,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Award size={18} className="pii-label-icon" />
-                      Licenses & Passports
+                      {t.licenses}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.licenses?.length > 0 ? (
                         cvData.detected.licenses.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -850,20 +813,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <User size={18} className="pii-label-icon" />
-                      Candidate Names (AI)
+                      {t.names}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.names?.length > 0 ? (
                         cvData.detected.names.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -872,20 +830,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <Briefcase size={18} className="pii-label-icon" />
-                      Companies & Schools (AI)
+                      {t.companies}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.companies?.length > 0 ? (
                         cvData.detected.companies.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -894,20 +847,15 @@ export default function Home() {
                   <div className="pii-row">
                     <div className="pii-label">
                       <MapPin size={18} className="pii-label-icon" />
-                      Locations & Addresses (AI)
+                      {t.locations}
                     </div>
                     <div className="pii-values">
                       {cvData.detected?.locations?.length > 0 ? (
                         cvData.detected.locations.map((val, idx) => (
-                          <span
-                            key={idx}
-                            className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}
-                          >
-                            {val}
-                          </span>
+                          <span key={idx} className={`pii-badge ${cvData.paid ? "unlocked" : "redacted"}`}>{val}</span>
                         ))
                       ) : (
-                        <span className="pii-badge none">None found</span>
+                        <span className="pii-badge none">{t.noneFound}</span>
                       )}
                     </div>
                   </div>
@@ -920,47 +868,28 @@ export default function Home() {
 
                 {/* Download and Unlock controls */}
                 <div className="btn-group-row">
-                  <a
-                    href={`/api/cv/${cvData.id}/download`}
-                    download
-                    style={{ textDecoration: "none" }}
-                  >
+                  <a href={`/api/cv/${cvData.id}/download`} download style={{ textDecoration: "none" }}>
                     <button type="button" className="action-btn secondary" style={{ width: "100%" }}>
                       <Download size={18} />
-                      Download Masked
+                      {t.downloadMasked}
                     </button>
                   </a>
 
-                  {/* Payment simulation / Unlock */}
                   {!cvData.paid ? (
-                    <button
-                      type="button"
-                      className="action-btn primary"
-                      onClick={handleUnlock}
-                      disabled={unlocking}
-                    >
-                      {unlocking ? (
-                        <RefreshCw size={18} className="spinner-icon animate-spin" />
-                      ) : (
-                        <CreditCard size={18} />
-                      )}
-                      Unlock Original
+                    <button type="button" className="action-btn primary" onClick={handleUnlock} disabled={unlocking}>
+                      {unlocking ? <RefreshCw size={18} className="spinner-icon animate-spin" /> : <CreditCard size={18} />}
+                      {unlocking ? t.unlockingBtn : t.unlockBtn}
                     </button>
                   ) : (
-                    <a
-                      href={`/api/cv/${cvData.id}/download`}
-                      download
-                      style={{ textDecoration: "none" }}
-                    >
+                    <a href={`/api/cv/${cvData.id}/download`} download style={{ textDecoration: "none" }}>
                       <button type="button" className="action-btn success" style={{ width: "100%" }}>
                         <CheckCircle size={18} />
-                        Download Original
+                        {t.downloadOriginal}
                       </button>
                     </a>
                   )}
                 </div>
 
-                {/* Manual Redact Editor Button */}
                 {!cvData.paid && (
                   <button
                     type="button"
@@ -969,14 +898,13 @@ export default function Home() {
                     onClick={() => setIsEditing(!isEditing)}
                   >
                     <Eye size={18} />
-                    {isEditing ? "View PDF Preview" : "Edit Redactions (Manual)"}
+                    {isEditing ? t.viewPreview : t.editRedactions}
                   </button>
                 )}
 
-                {/* Reset button */}
                 <button type="button" className="action-btn secondary" onClick={resetState}>
                   <RefreshCw size={18} />
-                  Upload Another CV
+                  {t.uploadAnother}
                 </button>
 
               </div>
@@ -988,10 +916,10 @@ export default function Home() {
               <div className="preview-header">
                 <div className="preview-title">
                   <Eye size={18} />
-                  Document Preview
+                  {t.docPreview}
                 </div>
                 <div className={`preview-badge ${cvData.paid ? "original" : "redacted"}`}>
-                  {cvData.paid ? "Original CV" : "Redacted Preview"}
+                  {cvData.paid ? t.originalCV : t.redactedPreview}
                 </div>
               </div>
 
@@ -1001,7 +929,7 @@ export default function Home() {
 
                     <div className="editor-controls" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--color-border)", paddingBottom: "1rem" }}>
                       <span style={{ fontSize: "0.9rem", color: "var(--color-text-muted)" }}>
-                        Click and drag on any page below to cover PII.
+                        {t.dragInstruction}
                       </span>
                       <button
                         type="button"
@@ -1010,7 +938,7 @@ export default function Home() {
                         onClick={applyManualRedactions}
                         disabled={savingCoords}
                       >
-                        {savingCoords ? "Saving..." : "Apply Redactions"}
+                        {savingCoords ? t.saving : t.applyRedactions}
                       </button>
                     </div>
 
