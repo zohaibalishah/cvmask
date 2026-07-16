@@ -818,3 +818,125 @@ body {
   background: rgba(168, 85, 247, 0.18);
   transform: translateY(-1px);
 }
+
+/* ─── Header Right (status + lang switcher) ─── */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ─── Language Switcher ─── */
+.lang-switcher {
+  position: relative;
+  z-index: 100;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  color: var(--color-text-main);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.lang-btn:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--color-border-glow);
+  color: var(--color-primary);
+}
+
+.lang-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lang-name {
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lang-chevron {
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.lang-chevron.open {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 160px;
+  background: rgba(16, 22, 38, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.4rem;
+  list-style: none;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.08);
+  animation: dropdownIn 0.15s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lang-option:hover {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--color-primary);
+}
+
+.lang-option.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.lang-check {
+  margin-left: auto;
+  color: var(--color-primary);
+}
+
+/* RTL layout support */
+[dir="rtl"] .lang-dropdown {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .lang-check {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .lang-name { display: none; }
+  .lang-btn  { padding: 0.35rem 0.5rem; }
+}

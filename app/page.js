@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import translations from "@/lib/translations";
+import LanguageSwitcher from "@/frontend/LanguageSwitcher";
 import {
   UploadCloud,
   FileText,
@@ -65,6 +67,7 @@ const Github = (props) => (
 );
 
 export default function Home() {
+  const [lang, setLang] = useState("en");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -85,6 +88,24 @@ export default function Home() {
   const [imageTimestamp, setImageTimestamp] = useState(Date.now());
 
   const fileInputRef = useRef(null);
+
+  // Language helpers
+  const t = translations[lang];
+  const handleLangChange = (code) => {
+    setLang(code);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cv-lang", code);
+      document.documentElement.lang = code;
+      document.documentElement.dir = translations[code].dir;
+    }
+  };
+
+  // Restore saved language on mount
+  useEffect(() => {
+    const saved = typeof window !== "undefined" && localStorage.getItem("cv-lang");
+    if (saved && translations[saved]) handleLangChange(saved);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Check API health status on mount
   useEffect(() => {
@@ -426,11 +447,14 @@ export default function Home() {
       <header className="app-header">
         <div className="logo">
           <ShieldAlert className="logo-icon" size={28} />
-          <span>CV Anonymizer</span>
+          <span>{t.siteTitle}</span>
         </div>
-        <div className="api-status">
-          <div className={`status-dot ${apiOnline ? "online" : ""}`}></div>
-          {apiOnline ? "Backend Live" : "Backend Offline"}
+        <div className="header-right">
+          <div className="api-status">
+            <div className={`status-dot ${apiOnline ? "online" : ""}`}></div>
+            {apiOnline ? t.backendLive : t.backendOffline}
+          </div>
+          <LanguageSwitcher currentLang={lang} onChange={handleLangChange} />
         </div>
       </header>
 
@@ -438,12 +462,9 @@ export default function Home() {
       {!cvData && !uploading && (
         <section className="hero">
           <h1>
-            Anonymize Resumes <span>Instantly</span>
+            {t.heroTitle} <span>{t.heroHighlight}</span>
           </h1>
-          <p>
-            Securely detect and redact emails, phone numbers, CNIC/national IDs, social profiles,
-            and links. Generate clean anonymous previews and unlock the original document upon payment.
-          </p>
+          <p>{t.heroDesc}</p>
         </section>
       )}
 
@@ -476,19 +497,19 @@ export default function Home() {
 
             {/* Customize Redaction Options */}
             <div className="redact-selectors-container">
-              <h3 className="selectors-title">Customize Info to Hide</h3>
+              <h3 className="selectors-title">{t.customizeTitle}</h3>
               <div className="selectors-grid">
                 {[
-                  { id: "emails", label: "Email Addresses" },
-                  { id: "phones", label: "Phone Numbers" },
-                  { id: "linkedin", label: "LinkedIn Profiles" },
-                  { id: "github", label: "GitHub Profiles" },
-                  { id: "websites", label: "Websites & Links" },
-                  { id: "cnic", label: "National ID / CNIC" },
-                  { id: "licenses", label: "Licenses & Passports" },
-                  { id: "names", label: "Candidate Names (AI)" },
-                  { id: "companies", label: "Companies & Schools (AI)" },
-                  { id: "locations", label: "Locations & Addresses (AI)" },
+                  { id: "emails", label: t.emails },
+                  { id: "phones", label: t.phones },
+                  { id: "linkedin", label: t.linkedin },
+                  { id: "github", label: t.github },
+                  { id: "websites", label: t.websites },
+                  { id: "cnic", label: t.cnic },
+                  { id: "licenses", label: t.licenses },
+                  { id: "names", label: t.names },
+                  { id: "companies", label: t.companies },
+                  { id: "locations", label: t.locations },
                 ].map((field) => (
                   <label key={field.id} className="selector-item">
                     <input
@@ -1134,7 +1155,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Powered by CV Anonymizer Engine &bull; Developed by{" "}
+          {t.footerPowered}{" "}
           <a href="https://github.com/zohaibalishah" target="_blank" rel="noopener noreferrer">
             zohaibalishah
           </a>

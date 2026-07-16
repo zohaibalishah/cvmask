@@ -63,11 +63,23 @@ export const metadata = {
     },
   },
 
-  /* ── Canonical & Alternates ── */
+  /* ── Canonical & hreflang Alternates ── */
   alternates: {
     canonical: BASE_URL,
     languages: {
-      "en-US": BASE_URL,
+      "x-default": BASE_URL,
+      "en":    BASE_URL,
+      "en-US": `${BASE_URL}/en`,
+      "en-GB": `${BASE_URL}/en-gb`,
+      "ar":    `${BASE_URL}/ar`,
+      "ur":    `${BASE_URL}/ur`,
+      "fr":    `${BASE_URL}/fr`,
+      "de":    `${BASE_URL}/de`,
+      "es":    `${BASE_URL}/es`,
+      "zh":    `${BASE_URL}/zh`,
+      "hi":    `${BASE_URL}/hi`,
+      "pt":    `${BASE_URL}/pt`,
+      "tr":    `${BASE_URL}/tr`,
     },
   },
 
@@ -79,6 +91,17 @@ export const metadata = {
     description: DESCRIPTION,
     siteName: SITE_NAME,
     locale: "en_US",
+    alternateLocale: [
+      "ar_SA",
+      "ur_PK",
+      "fr_FR",
+      "de_DE",
+      "es_ES",
+      "zh_CN",
+      "hi_IN",
+      "pt_BR",
+      "tr_TR",
+    ],
     images: [
       {
         url: `${BASE_URL}/og-image.png`,
@@ -136,7 +159,7 @@ const jsonLdApp = {
   description: DESCRIPTION,
   applicationCategory: "BusinessApplication",
   operatingSystem: "All",
-  inLanguage: "en",
+  inLanguage: ["en", "ar", "ur", "fr", "de", "es", "zh", "hi", "pt", "tr"],
   isAccessibleForFree: true,
   author: {
     "@type": "Person",
