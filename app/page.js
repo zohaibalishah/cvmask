@@ -1134,9 +1134,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Powered by CV Anonymizer Engine &bull; Developed in partnership with{" "}
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-            Antigravity
+          Powered by CV Anonymizer Engine &bull; Developed by{" "}
+          <a href="https://github.com/zohaibalishah" target="_blank" rel="noopener noreferrer">
+            zohaibalishah
           </a>
         </p>
       </footer>
