@@ -1,0 +1,220 @@
+{
+  "info": {
+    "_postman_id": "cv-anonymizer-collection",
+    "name": "CV Anonymizer API",
+    "description": "Upload CVs, preview anonymized PDF, unlock after payment.\n\n**Setup:** Start Python on :5001 and Node on :4000.\n\nAfter **Upload CV**, the `cvId` variable is saved automatically for other requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "cvId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Node API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check Node.js server is running."
+          },
+          "response": []
+        },
+        {
+          "name": "Python Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:5001/health",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "5001",
+              "path": ["health"]
+            },
+            "description": "Check Python anonymizer service is running."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CV Flow",
+      "item": [
+        {
+          "name": "1. Upload CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.id) {",
+                  "        pm.collectionVariables.set('cvId', json.id);",
+                  "        console.log('cvId saved:', json.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "cv",
+                  "type": "file",
+                  "src": [],
+                  "description": "PDF or image CV (pdf, png, jpg, jpeg, webp). Max 15 MB."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "upload"]
+            },
+            "description": "Upload a CV. Returns anonymous preview URL and detected PII types.\n\n**Form field name must be:** `cv`"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"paid\": false,\n  \"detected\": {\n    \"emails\": [\"john@example.com\"],\n    \"phones\": [\"+1 555-123-4567\"],\n    \"linkedin\": [\"https://linkedin.com/in/johndoe\"],\n    \"websites\": [\"https://johndoe.dev\"]\n  },\n  \"previewUrl\": \"http://localhost:4000/files/anonymous/a1b2c3d4-e5f6-7890-abcd-ef1234567890_anonymous.pdf\",\n  \"message\": \"Contact details hidden. Call POST /api/cv/:id/unlock after payment to reveal.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Get CV Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{cvId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{cvId}}"]
+            },
+            "description": "Get CV metadata. PII values are masked until unlocked."
+          },
+          "response": [
+            {
+              "name": "Before unlock",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"originalName\": \"resume.pdf\",\n  \"paid\": false,\n  \"detected\": {\n    \"emails\": [\"[hidden]\"],\n    \"phones\": [\"[hidden]\"],\n    \"linkedin\": [\"[hidden]\"],\n    \"websites\": [\"[hidden]\"]\n  },\n  \"previewUrl\": \"http://localhost:4000/files/anonymous/a1b2c3d4-e5f6-7890-abcd-ef1234567890_anonymous.pdf\",\n  \"unlockAvailable\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Download CV (anonymous if unpaid)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{cvId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{cvId}}", "download"]
+            },
+            "description": "Download PDF. Returns **anonymous** version when `paid: false`, **original** when `paid: true`.\n\nIn Postman use **Send and Download** to save the file."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Unlock CV (after payment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"pay_1234567890\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{cvId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{cvId}}", "unlock"]
+            },
+            "description": "Mark CV as paid. Call from your payment webhook after successful payment."
+          },
+          "response": [
+            {
+              "name": "Unlocked",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"paid\": true,\n  \"downloadUrl\": \"http://localhost:4000/api/cv/a1b2c3d4-e5f6-7890-abcd-ef1234567890/download\",\n  \"detected\": {\n    \"emails\": [\"john@example.com\"],\n    \"phones\": [\"+1 555-123-4567\"],\n    \"linkedin\": [\"https://linkedin.com/in/johndoe\"],\n    \"websites\": [\"https://johndoe.dev\"]\n  },\n  \"message\": \"Contact details unlocked. Download now returns the original CV.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Download CV (original after unlock)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{cvId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{cvId}}", "download"]
+            },
+            "description": "Run after **Unlock CV**. Returns the original PDF with contact details visible."
+          },
+          "response": []
+        },
+        {
+          "name": "Preview anonymous PDF (static URL)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/files/anonymous/{{cvId}}_anonymous.pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["files", "anonymous", "{{cvId}}_anonymous.pdf"]
+            },
+            "description": "Direct link to anonymized PDF (same as `previewUrl` from upload response)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+
+# Next.js build output & cache
+.next/
+out/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Uploaded CV files (user data — do not commit)
+uploads/original/*
+uploads/anonymous/*
+!uploads/original/.gitkeep
+!uploads/anonymous/.gitkeep
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Optional local test files
+*.pdf
+!**/fixtures/**/*.pdf
